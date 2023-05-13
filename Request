@@ -1,0 +1,20 @@
+PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT ?country ?capital ?population
+WHERE {
+  ?country a dbo:Country ;
+          dbo:capital ?capital ;
+          dbo:populationTotal ?population .
+}
+LIMIT 10
+==============================================================
+PREFIX dbo: <http://dbpedia.org/ontology/>
+
+SELECT ?country ?capital ?population
+WHERE {
+  ?country a dbo:Country ;
+          dbo:capital ?capital ;
+          dbo:populationTotal ?population .
+}
+ORDER BY DESC(?population)
+LIMIT 10
+=========================================================
