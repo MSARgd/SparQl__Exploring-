@@ -1,8 +1,10 @@
 import tkinter as tk
-import tkinter as tk
 from tkinter import *
-import tkinter
+from tkinter import ttk
 from SPARQLWrapper import SPARQLWrapper, JSON
+import urllib.request
+from PIL import Image, ImageTk
+import matplotlib.pyplot as plt
 
 # SPARQL endpoint URL
 DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql"
@@ -14,50 +16,89 @@ def execute_sparql(query):
     results = sparql.query().convert()
     return results["results"]["bindings"]
 
-def get_country_info(country):
+def get_info(object):
     query = f"""
         PREFIX dbo: <http://dbpedia.org/ontology/>
         SELECT ?property ?value
         WHERE {{
-            <http://dbpedia.org/resource/{country}> ?property ?value
+            <http://dbpedia.org/resource/{object}> ?property ?value
         }}
     """
     results = execute_sparql(query)
-    country_info = {}
+    object_info = {}
     for result in results:
         property_name = result["property"]["value"].split("/")[-1]
         property_value = result["value"]["value"]
-        country_info[property_name] = property_value
-    return country_info
+        object_info[property_name] = property_value
+    return object_info
 
-def search_country():
-    country = country_entry.get()
-    country_info = get_country_info(country)
-    country_info_text.delete("1.0", END)
-    if country_info:
-        for property_name, property_value in country_info.items():
-            country_info_text.insert(END, f"{property_name}: {property_value}\n")
+def search_object():
+    object = object_entry.get()
+    object_info = get_info(object)
+    treeview.delete(*treeview.get_children())
+    if object_info:
+        for property_name, property_value in object_info.items():
+            treeview.insert("", "end", values=(property_name, property_value))
+
+        # Get and display object image
+        image_url = object_info.get('thumbnail')
+        if image_url:
+            urllib.request.urlretrieve(image_url, "test/object_image.jpg")
+            image = Image.open("test/object_image.jpg")
+            image = image.resize((200, 200), Image.ANTIALIAS)
+            photo = ImageTk.PhotoImage(image)
+            image_label.configure(image=photo)
+            image_label.image = photo
+        else:
+            image_label.configure(image='')
     else:
-        country_info_text.insert(END, "Aucune information n’a été trouvée pour le pays.")
+        treeview.insert("", "end", values=("Aucune information n’a été trouvée pour le pays.", ""))
+        image_label.configure(image='')
+
+def execute_custom_query():
+    query = custom_query_entry.get("1.0", "end-1c")
+    results = execute_sparql(query)
+    treeview.delete(*treeview.get_children())
+    for result in results:
+        for var_name, var_value in result.items():
+            treeview.insert("", "end", values=(var_name, var_value["value"]))
+
+
 
 # Create the main window
 window = Tk()
-window.title("Country Explorer")
+window.title("Explorer")
 
-# Create and place widgets
-country_label = Label(window, text="Entrez le nom du pays:")
-country_label.pack()
-country_entry = Entry(window)
-country_entry.pack()
-
-search_button = Button(window, text="Search", command=search_country)
+# Create and place widgets for object search
+object_label = Label(window, text="Entrez ")
+object_label.pack()
+object_entry = Entry(window)
+object_entry.pack()
+search_button = Button(window, text="Recherche", command=search_object)
 search_button.pack()
 
-country_info_text = Text(window)
-country_info_text.pack()
+# Create and place widgets for custom query
+custom_query_label = Label(window, text="Entrez une requête SPARQL personnalisée:")
+custom_query_label.pack()
+custom_query_entry = Text(window, height=5)
+custom_query_entry.pack()
+execute_query_button = Button(window, text="Exécuter la requête", command=execute_custom_query)
+execute_query_button.pack()
+
+# Create a treeview to display the
+# Create a treeview to display the properties and their values
+treeview = ttk.Treeview(window, columns=("Variable", "Valeur"), show="headings")
+treeview.heading("Variable", text="Variable")
+treeview.heading("Valeur", text="Valeur")
+treeview.column("Valeur", width=400)
+treeview.pack()
+
+# Create and place an image label
+image_label = Label(window)
+image_label.pack()
+
+
+
 
 # Start the Tkinter event loop
 window.mainloop()
-
-# if __name__ == '__main__':
-#     print_hi('PyCharm')
