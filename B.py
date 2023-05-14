@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from SPARQLWrapper import SPARQLWrapper, JSON
-
 # SPARQL endpoint URL
 DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql"
 
