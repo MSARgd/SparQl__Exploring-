@@ -8,10 +8,10 @@ using Python SPARQL. Thanks to this acquired knowledge, it becomes possible
 leverage the power of DBpedia to improve projects and re-
 Conducted searches.
 
-#TEST
+## Test
 ![Project Logo](screens/0.png)
 
-## Test
+
 ![Project Logo](screens/1.png)
 
 
