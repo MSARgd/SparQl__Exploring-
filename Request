@@ -1,3 +1,17 @@
+SELECT ?description
+WHERE {
+  <http://dbpedia.org/resource/Scientist> dbo:abstract ?description.
+  FILTER (lang(?description) = "en")
+}
+=============================================
+PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT ?scientistLabel
+WHERE {
+  ?scientist a dbo:Scientist.
+  ?scientist rdfs:label ?scientistLabel.
+  FILTER (lang(?scientistLabel) = "en")
+}
+====================================================
 PREFIX dbo: <http://dbpedia.org/ontology/>
 SELECT ?country ?capital ?population
 WHERE {
@@ -5,7 +19,7 @@ WHERE {
           dbo:capital ?capital ;
           dbo:populationTotal ?population .
 }
-LIMIT 10
+LIMIT 100
 ==============================================================
 PREFIX dbo: <http://dbpedia.org/ontology/>
 
@@ -16,5 +30,24 @@ WHERE {
           dbo:populationTotal ?population .
 }
 ORDER BY DESC(?population)
-LIMIT 10
+LIMIT 100
 =========================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bindings
